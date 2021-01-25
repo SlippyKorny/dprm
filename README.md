@@ -9,9 +9,8 @@ I have created this utility as I could not find a lightweight, terminal based ut
 
 <img align="left" src="https://raw.githubusercontent.com/TheSlipper/dprm/main/img/compr_1.jpg?token=AGZOOL7WY5VRSANH34NEJO3AB3O7Y" width="45%">
 <img align="right" src="https://raw.githubusercontent.com/TheSlipper/dprm/main/img/compr_2.jpg?token=AGZOOL42BOL2GQXUUCZYLOTAB3PAO" width="45%">
-
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-\[Art source: [click](https://twitter.com/lezon_re/status/1352567928109993984?s=20)\]
+<div style="clear: both;"></div>
+**\[Art source: [click](https://twitter.com/lezon_re/status/1352567928109993984?s=20)\]**
 
 I will be however trying to find a simple solution for detecting duplicate images of varying compression levels in the future.
 
