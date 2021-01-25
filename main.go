@@ -48,7 +48,7 @@ Usage: dprm [-dir STRING] [-print | -remove] [-recursive] [-verbose]
 
 	flag.BoolVar(&a.verbose, "verbose", false, "verbosity of the command's execution")
 	flag.BoolVar(&a.remove, "remove", false, "if set to true will remove the duplicates autonomously")
-	flag.BoolVar(&a.remove, "print", false, "prints out the duplicates")
+	flag.BoolVar(&a.print, "print", false, "prints out the duplicates")
 	flag.BoolVar(&a.recursive, "recursive", false, "if set to true will recursively traverse the folder tree")
 	flag.StringVar(&a.directory, "dir", "", "defines the directory of operation")
 	flag.Parse()
@@ -73,16 +73,8 @@ func main() {
 	}
 
 	// Remove duplicates if the remove flag was selected
-	s := ""
-	if a.remove {
-		if a.verbose {
-			s = RmDup(a.directory, a.recursive)
-		} else {
-			_ = RmDup(a.directory, a.recursive)
-		}
-	} else if a.print {
-		s = GetDupStr(a.directory, a.recursive)
+	s := GetDupStr(a.directory, a.recursive, a.remove)
+	if a.verbose {
 		fmt.Println(s)
 	}
-	fmt.Println(s)
 }
