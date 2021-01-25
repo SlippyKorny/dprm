@@ -15,6 +15,8 @@ I have created this utility as I could not find a lightweight, terminal based ut
 
 I will be however trying to find a simple solution for detecting duplicate images of varying compression levels in the future.
 
+**Keep in mind that this project is still in early stage of development. Use it on your own risk!**
+
 ## Usage
 
 ```
