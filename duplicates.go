@@ -2,9 +2,7 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -67,23 +65,6 @@ func GetDupStr(path string, recursive bool, remove bool) string {
 	}
 
 	return sb.String()
-}
-
-// genHashes generates hashes for the contents of the files that are pointed by the passed paths
-func genHashes(paths []string) ([][32]byte, error) {
-	hashes := make([][32]byte, len(paths))
-	pathLen := len(paths)
-
-	for i := 0; i < pathLen; i++ {
-		dat, err := ioutil.ReadFile(paths[i])
-		if err != nil {
-			return nil, err
-		}
-
-		hashes[i] = sha256.Sum256(dat)
-	}
-
-	return hashes, nil
 }
 
 // findDups finds duplicate files in the given files and hashes arrays
