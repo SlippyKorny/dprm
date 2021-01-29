@@ -43,7 +43,8 @@ Usage: dprm [-dir STRING] [-print | -remove] [-recursive] [-verbose]
 -verbose
 		verbosity of the command's execution
 -help
-		prints out this help section`)
+		prints out this help section
+`)
 	}
 
 	flag.BoolVar(&a.verbose, "verbose", false, "verbosity of the command's execution")
