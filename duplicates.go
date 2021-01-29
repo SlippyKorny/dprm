@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 )
 
 // GetHashDupStr searches for duplicates with the content hash comparison method, prepares the output
 // containing all of the duplicates and if the remove flag is set to true it also removes the duplicates
-func GetHashDupStr(path string, recursive bool, remove bool) string {
+func GetHashDupStr(path string, recursive bool, remove bool, verbose bool) string {
 	// Extract the names of all files that are being taken into consideration
 	f, err := extrFilenames(path, recursive)
 	if err != nil {
@@ -18,7 +19,7 @@ func GetHashDupStr(path string, recursive bool, remove bool) string {
 
 	// Generate and save all of the hashes in pair with the corresponding files
 	var h [][32]byte
-	h, err = genContentHashes(f)
+	h, err = genContentHashes(f, verbose)
 	if err != nil {
 		return err.Error()
 	}
@@ -33,7 +34,7 @@ func GetHashDupStr(path string, recursive bool, remove bool) string {
 // GetPerceptualDupStr searches for duplicates with the perceptual image comparison method, prepares
 // the output containing all of the duplicates and if the remove flag is set to true it also removes
 // the duplicates
-func GetPerceptualDupStr(path string, recursive bool, remove bool) string {
+func GetPerceptualDupStr(path string, recursive bool, remove bool, verbose bool) string {
 	// Extract the names of all files that are being taken into consideration
 	f, err := extrFilenames(path, recursive)
 	if err != nil {
@@ -42,7 +43,7 @@ func GetPerceptualDupStr(path string, recursive bool, remove bool) string {
 
 	// Generates average color value hashes for each one of them
 	var h [][]float32
-	h, err = genAvgColourHashes(f)
+	h, err = genAvgColourHashes(f, verbose)
 	if err != nil {
 		return err.Error()
 	}
@@ -84,7 +85,30 @@ func findDupsByte(files []string, hashes [][32]byte) map[string][]string {
 
 // findDupsFloat32 finds duplicate files with the use of float32 hashes
 func findDupsFloat32(files []string, hashes [][]float32) map[string][]string {
+	dups := make(map[string][]string)
+	fLen := len(files)
 
+	for i := 0; i < fLen-1; i++ {
+		// If hashes[i] is already in map either as key or value then skip this
+		if isInMap(dups, files[i]) {
+			continue
+		}
+
+		for j := i + 1; j < fLen; j++ {
+			// If hashes are exactly the same
+			if reflect.DeepEqual(hashes[i], hashes[j]) {
+				// If it's a new entry then save like this
+				if _, k := dups[files[i]]; !k {
+					dups[files[i]] = make([]string, 1)
+					dups[files[i]][0] = files[j]
+				} else { // otherwise like this
+					dups[files[i]] = append(dups[files[i]], files[j])
+				}
+			}
+		}
+	}
+
+	return dups
 }
 
 // fmtDupOutput formats a string with all the found duplicates and if necessary also deletes them

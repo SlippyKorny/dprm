@@ -20,7 +20,7 @@ func loadArgs() args {
 	var a args
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `dprm version 0.0.1
+		fmt.Fprintf(os.Stderr, `dprm version 0.0.2
 Copyright (C) 2021 by Kornel Domeradzki
 Source: http://github.com/TheSlipper/dprm
 
@@ -72,9 +72,9 @@ func main() {
 	// Remove duplicates if the remove flag was selected
 	var s string
 	if a.method == "hashes" {
-		s = GetHashDupStr(a.directory, a.recursive, a.remove)
+		s = GetHashDupStr(a.directory, a.recursive, a.remove, a.verbose)
 	} else if a.method == "perceptual" {
-		s = GetPerceptualDupStr(a.directory, a.recursive, a.remove)
+		s = GetPerceptualDupStr(a.directory, a.recursive, a.remove, a.verbose)
 	} else {
 		fmt.Printf("No such method as '%s'\n", a.method)
 		os.Exit(2)
