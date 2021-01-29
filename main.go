@@ -74,7 +74,7 @@ func main() {
 
 	// Remove duplicates if the remove flag was selected
 	s := GetDupStr(a.directory, a.recursive, a.remove)
-	if a.verbose {
+	if !a.remove || a.verbose {
 		fmt.Println(s)
 	}
 }
