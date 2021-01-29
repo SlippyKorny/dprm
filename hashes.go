@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 )
 
-// genHashes generates hashes for the contents of the files that are pointed by the passed paths
-func genHashes(paths []string) ([][32]byte, error) {
+// genContentHashes generates hashes based on the raw content of the given files
+func genContentHashes(paths []string) ([][32]byte, error) {
 	hashes := make([][32]byte, len(paths))
 	pathLen := len(paths)
 
@@ -20,4 +20,10 @@ func genHashes(paths []string) ([][32]byte, error) {
 	}
 
 	return hashes, nil
+}
+
+// genContentHashes generates hashes based on a slice of average color values of an image at the
+// position of white pixels of a mask. One average value corresponds to one mask
+func genAvgColourHashes(paths []string) ([][]float32, error) {
+
 }

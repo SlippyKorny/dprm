@@ -72,9 +72,9 @@ func main() {
 	// Remove duplicates if the remove flag was selected
 	var s string
 	if a.method == "hashes" {
-		s = GetDupStr(a.directory, a.recursive, a.remove)
+		s = GetHashDupStr(a.directory, a.recursive, a.remove)
 	} else if a.method == "perceptual" {
-
+		s = GetPerceptualDupStr(a.directory, a.recursive, a.remove)
 	} else {
 		fmt.Printf("No such method as '%s'\n", a.method)
 		os.Exit(2)
