@@ -19,7 +19,7 @@ func GetHashDupStr(path string, recursive bool, remove bool, verbose bool) strin
 
 	// Generate and save all of the hashes in pair with the corresponding files
 	var h [][32]byte
-	h, err = genContentHashes(f, verbose)
+	h, err = genContentHashes(f)
 	if err != nil {
 		return err.Error()
 	}
@@ -43,7 +43,7 @@ func GetPerceptualDupStr(path string, recursive bool, remove bool, verbose bool)
 
 	// Generates average color value hashes for each one of them
 	var h [][]float32
-	h, err = genAvgColourHashes(f, verbose)
+	h, err = genAvgColourHashes(f)
 	if err != nil {
 		return err.Error()
 	}
