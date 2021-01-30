@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"image"
 	"os"
-	"reflect"
 	"strings"
+
+	"github.com/vitali-fedulov/images"
 )
 
 // GetHashDupStr searches for duplicates with the content hash comparison method, prepares the output
@@ -43,13 +45,14 @@ func GetPerceptualDupStr(path string, recursive bool, remove bool, verbose bool)
 
 	// Generates average color value hashes for each one of them
 	var h [][]float32
-	h, err = genAvgColourHashes(f)
+	var s []image.Point
+	h, s, err = genAvgColourHashes(f)
 	if err != nil {
 		return err.Error()
 	}
 
 	// Find the duplicates and store their hashes and names
-	d := findDupsFloat32(f, h)
+	d := findDupsFloat32(f, h, s)
 
 	// Format the output (delete duplicates if delete flag is on) and return it
 	return fmtDupOutput(remove, d)
@@ -84,7 +87,7 @@ func findDupsByte(files []string, hashes [][32]byte) map[string][]string {
 }
 
 // findDupsFloat32 finds duplicate files with the use of float32 hashes
-func findDupsFloat32(files []string, hashes [][]float32) map[string][]string {
+func findDupsFloat32(files []string, hashes [][]float32, sizes []image.Point) map[string][]string {
 	dups := make(map[string][]string)
 	fLen := len(files)
 
@@ -96,7 +99,7 @@ func findDupsFloat32(files []string, hashes [][]float32) map[string][]string {
 
 		for j := i + 1; j < fLen; j++ {
 			// If hashes are exactly the same
-			if reflect.DeepEqual(hashes[i], hashes[j]) {
+			if images.Similar(hashes[i], hashes[j], sizes[i], sizes[j]) {
 				// If it's a new entry then save like this
 				if _, k := dups[files[i]]; !k {
 					dups[files[i]] = make([]string, 1)
@@ -120,21 +123,21 @@ func fmtDupOutput(rm bool, d map[string][]string) string {
 		sb.WriteString(fmt.Sprintf("found %d duplicate instances:\n", len(d)))
 
 		for k, v := range d {
-			sb.WriteString(fmt.Sprintf("\t\"%s\" is the same as: ", k))
+			sb.WriteString(fmt.Sprintf("File %s is the same as:\n", k))
 
-			sb.WriteString(fmt.Sprintf("%s ", v[0]))
-			// Delete duplicates if flag is true
-			if rm {
-				err := os.Remove(v[0])
-				if err != nil {
-					sb.WriteString("(failed to delete that file)")
-				} else {
-					sb.WriteString("(successfully deleted)")
-				}
-			}
+			// sb.WriteString(fmt.Sprintf("%s ", v[0]))
+			// // Delete duplicates if flag is true
+			// if rm {
+			// 	err := os.Remove(v[0])
+			// 	if err != nil {
+			// 		sb.WriteString("(failed to delete that file)")
+			// 	} else {
+			// 		sb.WriteString("(successfully deleted)")
+			// 	}
+			// }
 
-			for i := 1; i < len(v); i++ {
-				sb.WriteString(fmt.Sprintf(", %s ", v[i]))
+			for i := 0; i < len(v); i++ {
+				sb.WriteString(fmt.Sprintf("\t%s", v[i]))
 
 				// Delete duplicates if flag is true
 				if rm {
@@ -145,6 +148,8 @@ func fmtDupOutput(rm bool, d map[string][]string) string {
 						sb.WriteString("(successfully deleted)")
 					}
 				}
+
+				sb.WriteString("\n")
 			}
 			sb.WriteString("\n")
 		}

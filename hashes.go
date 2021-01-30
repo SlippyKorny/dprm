@@ -3,7 +3,10 @@ package main
 import (
 	"crypto/sha256"
 	"errors"
+	"fmt"
+	"image"
 	"io/ioutil"
+	"os"
 	"runtime"
 	"sync"
 
@@ -33,6 +36,7 @@ func genContentHashes(paths []string) ([][32]byte, error) {
 		for i := start; i < end; i++ {
 			dat, err := ioutil.ReadFile(paths[i])
 			if err != nil {
+				fmt.Fprintf(os.Stderr, "'%s': %s\n", paths[i], err.Error())
 				return
 			}
 
@@ -45,7 +49,7 @@ func genContentHashes(paths []string) ([][32]byte, error) {
 	// Execute the hash generation concurrently
 	i := 0
 	for ; i < threads-1; i++ {
-		go hashGenFunc(i, i*interval, i+1*interval)
+		go hashGenFunc(i, i*interval, (i+1)*interval)
 	}
 	go hashGenFunc(i, i*interval, len(paths))
 
@@ -63,7 +67,7 @@ func genContentHashes(paths []string) ([][32]byte, error) {
 
 // genContentHashes generates hashes based on a slice of average color values of an image at the
 // position of white pixels of a mask. One average value corresponds to one mask
-func genAvgColourHashes(paths []string) ([][]float32, error) {
+func genAvgColourHashes(paths []string) ([][]float32, []image.Point, error) {
 	// Set up concurrency vars
 	var wg sync.WaitGroup
 	var err error
@@ -78,6 +82,7 @@ func genAvgColourHashes(paths []string) ([][]float32, error) {
 
 	// Declare the hash slice
 	hashes := make([][]float32, len(paths))
+	sizes := make([]image.Point, len(paths))
 
 	// Declare the concurrent closure
 	hashGenFunc := func(index, start, end int) {
@@ -85,10 +90,11 @@ func genAvgColourHashes(paths []string) ([][]float32, error) {
 		for i := start; i < end; i++ {
 			img, err := images.Open(paths[i])
 			if err != nil {
+				fmt.Fprintf(os.Stderr, "'%s': %s\n", paths[i], err.Error())
 				return
 			}
 
-			hashes[i], _ = images.Hash(img)
+			hashes[i], sizes[i] = images.Hash(img)
 		}
 
 		statuses[index] = true
@@ -97,7 +103,7 @@ func genAvgColourHashes(paths []string) ([][]float32, error) {
 	// Execute the hash generation concurrently
 	i := 0
 	for ; i < threads-1; i++ {
-		go hashGenFunc(i, i*interval, i+1*interval)
+		go hashGenFunc(i, i*interval, (i+1)*interval)
 	}
 	go hashGenFunc(i, i*interval, len(paths))
 
@@ -110,5 +116,5 @@ func genAvgColourHashes(paths []string) ([][]float32, error) {
 		}
 	}
 
-	return hashes, err
+	return hashes, sizes, err
 }
