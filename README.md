@@ -20,19 +20,29 @@ I will be however trying to find a simple solution for detecting duplicate image
 ## Usage
 
 ```
-dprm [-dir STRING] [-print | -remove] [-recursive] [-verbose]
+dprm version 0.0.2
+Copyright (C) 2021 by Kornel Domeradzki
+Source: http://github.com/TheSlipper/dprm
 
--dir string
-	defines the directory of operation
--print
-		prints out the duplicates
--remove
-		if set to true will remove the duplicates autonomously  
--recursive
+dprm is a simple commandline hash based duplicate image search and removal tool.
+
+dprm comes with ABSOLUTELY NO WARRANTY.  This is free software, and you
+are welcome to redistribute it under certain conditions.  See the GNU General
+Public Licence for details.
+
+Usage: dprm [OPTION...] [DIRECTORY]
+
+--method string
+		specifies the method with which the duplicates are searched for.
+		Available methods are 'hashes' (default) and 'perceptual'
+--remove
+		if set to true will remove the duplicates autonomously
+--recursive
 		if set to true will recursively traverse the folder tree
--verbose
-		verbosity of the command's execution
--help
+--verbose
+		verbosity of the command's execution. If remove argument is not
+		set to true then the program will set verbose to true.
+--help
 		prints out this help section
 ```
 
