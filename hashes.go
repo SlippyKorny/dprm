@@ -34,9 +34,12 @@ func genContentHashes(paths []string) ([][32]byte, error) {
 	hashGenFunc := func(index, start, end int) {
 		defer wg.Done()
 		for i := start; i < end; i++ {
-			dat, err := ioutil.ReadFile(paths[i])
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "'%s': %s\n", paths[i], err.Error())
+			dat, er := ioutil.ReadFile(paths[i])
+			if er != nil {
+				fmt.Fprintf(os.Stderr, "'%s': %s\n", paths[i], er.Error())
+				err = er
+				return
+			} else if err != nil {
 				return
 			}
 
@@ -88,9 +91,12 @@ func genAvgColourHashes(paths []string) ([][]float32, []image.Point, error) {
 	hashGenFunc := func(index, start, end int) {
 		defer wg.Done()
 		for i := start; i < end; i++ {
-			img, err := images.Open(paths[i])
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "'%s': %s\n", paths[i], err.Error())
+			img, er := images.Open(paths[i])
+			if er != nil {
+				fmt.Fprintf(os.Stderr, "'%s': %s\n", paths[i], er.Error())
+				err = er
+				return
+			} else if err != nil {
 				return
 			}
 

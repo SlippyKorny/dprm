@@ -125,17 +125,6 @@ func fmtDupOutput(rm bool, d map[string][]string) string {
 		for k, v := range d {
 			sb.WriteString(fmt.Sprintf("File %s is the same as:\n", k))
 
-			// sb.WriteString(fmt.Sprintf("%s ", v[0]))
-			// // Delete duplicates if flag is true
-			// if rm {
-			// 	err := os.Remove(v[0])
-			// 	if err != nil {
-			// 		sb.WriteString("(failed to delete that file)")
-			// 	} else {
-			// 		sb.WriteString("(successfully deleted)")
-			// 	}
-			// }
-
 			for i := 0; i < len(v); i++ {
 				sb.WriteString(fmt.Sprintf("\t%s", v[i]))
 
