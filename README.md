@@ -1,38 +1,51 @@
 # dprm
 
-dprm (duplicate remover) is a simple and lightweight commandline utility for finding and removing duplicate images in a given directory.
+dprm (duplicate remover) is a concurrent, simple and lightweight commandline utility for finding and removing duplicate images in a given directory. The program is still in early stage of development however it already provides a very useful duplication detection and removal functionalities in a non-bloated form.
 
+## Quick usage guide
 
-## About the project
+I have created this utility as I could not find a lightweight, terminal based utility for finding and removing duplicate images from my server storage. As of the moment two distinct duplicate detection methods were introduced. Each one of them is meant to be used for different use cases so it is highly recommended for all users to read this small guide before using the program.
 
-I have created this utility as I could not find a lightweight, terminal based utility for finding and removing duplicate images from my storage. This project is still in early stage of development and therefore some of the features might not work correctly or are not yet implemented. As of the moment the only implemented image comparison method is using hashes derived from image content which makes the program detect only the exact same images. In other words those two images below will be detected as different images despite only having a varying compression rate:
+### Content based hash comparison
 
-<img align="left" src="https://raw.githubusercontent.com/TheSlipper/dprm/main/img/compr_1.jpg?token=AGZOOL7WY5VRSANH34NEJO3AB3O7Y" width="45%">
-<img align="right" src="https://raw.githubusercontent.com/TheSlipper/dprm/main/img/compr_2.jpg?token=AGZOOL42BOL2GQXUUCZYLOTAB3PAO" width="45%">
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+This method uses SHA256 cryptographic hash function to generate a 32 byte hash for each of the images. Best use case for this method is finding exact matches of images.
 
-(Art source: [click](https://twitter.com/lezon_re/status/1352567928109993984?s=20))
+### Perceptual image similarity
 
-I will be however trying to find a simple solution for detecting duplicate images of varying compression levels in the future.
+This method uses an implementation of a perceptual image similarity algorithm made by [Vitali Fedulov](https://github.com/vitali-fedulov/images). This method works great with:
+1. Finding similar images of different compression rate
+2. Finding images with the same features and little differences
 
-**Keep in mind that this project is still in early stage of development. Use it on your own risk!**
+**WARNING:** This method may detect images with and without captions as the same duplicates which may not be desired in some use cases.
+
+**WARNING 2:** This method uses Golang's standard library's package called image. I have heard of cases in which it causes problems with decoding some png and gif files. The concerning errors for each of those formats respectively are: `invalid checksum` and `frame bounds larger than image bounds`. Those errors will stop the execution of the command before any removal action therefore no file will be lost however it should be noted that it may happen and you might want to move the files that cause this error into some other place for the time of command's execution.
 
 ## Usage
 
 ```
-dprm [-dir STRING] [-print | -remove] [-recursive] [-verbose]
+dprm version 0.0.2
+Copyright (C) 2021 by Kornel Domeradzki
+Source: http://github.com/TheSlipper/dprm
 
--dir string
-	defines the directory of operation
--print
-		prints out the duplicates
--remove
-		if set to true will remove the duplicates autonomously  
--recursive
+dprm is a simple commandline hash based duplicate image search and removal tool.
+
+dprm comes with ABSOLUTELY NO WARRANTY.  This is free software, and you
+are welcome to redistribute it under certain conditions.  See the GNU General
+Public Licence for details.
+
+Usage: dprm [OPTION...] [DIRECTORY]
+
+--method string
+		specifies the method with which the duplicates are searched for.
+		Available methods are 'hashes' (default) and 'perceptual'
+--remove
+		if set to true will remove the duplicates autonomously
+--recursive
 		if set to true will recursively traverse the folder tree
--verbose
-		verbosity of the command's execution
--help
+--verbose
+		verbosity of the command's execution. If remove argument is not
+		set to true then the program will set verbose to true.
+--help
 		prints out this help section
 ```
 

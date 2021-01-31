@@ -76,10 +76,3 @@ func extrFilenames(path string, recursive bool) ([]string, error) {
 
 	return files, nil
 }
-
-// rmFiles removes duplicate files and returns the list of removed files
-func rmFiles(files []string) (rmd []string, err error) {
-	// TODO: Implement this
-
-	return nil, nil
-}
