@@ -18,6 +18,8 @@ This method uses an implementation of a perceptual image similarity algorithm ma
 
 **WARNING:** This method may detect images with and without captions as the same duplicates which may not be desired in some use cases.
 
+**WARNING 2:** This method uses Golang's standard library's package called image. I have heard of cases in which it causes problems with decoding some png and gif files. The concerning errors for each of those formats respectively are: `invalid checksum` and `frame bounds larger than image bounds`. Those errors will stop the execution of the command before any removal action therefore no file will be lost however it should be noted that it may happen and you might want to move the files that cause this error into some other place for the time of command's execution.
+
 ## Usage
 
 ```
