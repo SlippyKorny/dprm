@@ -11,6 +11,7 @@ type args struct {
 	method    string
 	remove    bool
 	recursive bool
+	csv       bool
 	verbose   bool
 	directory string
 }
@@ -33,25 +34,27 @@ Public Licence for details.
 Usage: dprm [OPTION...] [DIRECTORY]
 
 --method string
-		specifies the method with which the duplicates are searched for.
-		Available methods are 'hashes' (default) and 'perceptual'
+		Specifies the method with which the duplicates are searched for.
+		Available methods are 'hashes' (default) and 'perceptual'.
 --remove
-		if set to true will remove the duplicates autonomously
+		If set to true will remove the duplicates autonomously.
 --recursive
-		if set to true will recursively traverse the folder tree
+		If set to true will recursively traverse the folder tree.
+--csv
+		If set to true will output the duplicate images in csv format.
 --verbose
-		verbosity of the command's execution. If remove argument is not
+		Verbosity of the command's execution. If remove argument is not
 		set to true then the program will set verbose to true.
 --help
-		prints out this help section
+		Prints out this help section.
 `)
 	}
 
-	flag.StringVar(&a.method, "method", "hashes", "specifies the method with which the duplicates"+
-		"are searched for. Available methods are 'hashes' (default) and 'perceptual")
-	flag.BoolVar(&a.remove, "remove", false, "if set to true will remove the duplicates autonomously")
-	flag.BoolVar(&a.recursive, "recursive", false, "if set to true will recursively traverse the folder tree")
-	flag.BoolVar(&a.verbose, "verbose", false, "verbosity of the command's execution")
+	flag.StringVar(&a.method, "method", "hashes", "")
+	flag.BoolVar(&a.remove, "remove", false, "")
+	flag.BoolVar(&a.recursive, "recursive", false, "")
+	flag.BoolVar(&a.csv, "csv", false, "")
+	flag.BoolVar(&a.verbose, "verbose", false, "")
 	flag.Parse()
 
 	if flag.NArg() == 0 {
