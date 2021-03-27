@@ -21,7 +21,7 @@ func loadArgs() args {
 	var a args
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `dprm version 0.0.2
+		fmt.Fprintf(os.Stderr, `dprm version 0.0.3
 Copyright (C) 2021 by Kornel Domeradzki
 Source: http://github.com/TheSlipper/dprm
 
