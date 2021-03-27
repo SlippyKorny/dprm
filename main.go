@@ -72,18 +72,26 @@ func main() {
 	// Load the arguments
 	a := loadArgs()
 
+	// Select the output style
+	var style string
+	if a.csv {
+		style = "csv"
+	} else if a.verbose {
+		style = "normal"
+	} else {
+		style = "none"
+	}
+
 	// Remove duplicates if the remove flag was selected
 	var s string
 	if a.method == "hashes" {
-		s = GetHashDupStr(a.directory, a.recursive, a.remove, a.verbose)
+		s = GetHashDupStr(a.directory, a.recursive, a.remove, style)
 	} else if a.method == "perceptual" {
-		s = GetPerceptualDupStr(a.directory, a.recursive, a.remove, a.verbose)
+		s = GetPerceptualDupStr(a.directory, a.recursive, a.remove, style)
 	} else {
 		fmt.Printf("No such method as '%s'\n", a.method)
 		os.Exit(2)
 	}
 
-	if !a.remove || a.verbose {
-		fmt.Println(s)
-	}
+	fmt.Println(s)
 }
