@@ -1,4 +1,4 @@
-package main
+package dprm
 
 import (
 	"crypto/sha256"
