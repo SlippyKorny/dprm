@@ -7,7 +7,7 @@ import (
 )
 
 // args contains runtime arguments for the drpm command
-type args struct {
+type Args struct {
 	method    string
 	remove    bool
 	recursive bool
@@ -17,8 +17,8 @@ type args struct {
 }
 
 // loadArgs creates the arguments struct with the passed arguments
-func loadArgs() args {
-	var a args
+func loadArgs() Args {
+	var a Args
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, `dprm version 0.0.3
@@ -68,9 +68,14 @@ Usage: dprm [OPTION...] [DIRECTORY]
 	return a
 }
 
-func main() {
-	// Load the arguments
-	a := loadArgs()
+// Run runs the commandline utility. It accepts a pointer to arguments so that other applications can incorporate this
+// tools functionality. If the pointer is nil then it reads the arguments from command line.
+func Run(a *Args) string {
+	// if no args passed then read them from the commandline arguments
+	if a == nil {
+		val := loadArgs()
+		a = &val
+	}
 
 	// Select the output style
 	var style string
@@ -93,5 +98,9 @@ func main() {
 		os.Exit(2)
 	}
 
-	fmt.Println(s)
+	return s
+}
+
+func main() {
+	fmt.Println(Run(nil))
 }
