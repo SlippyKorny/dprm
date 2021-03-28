@@ -1,4 +1,4 @@
-package main
+package dprm
 
 import (
 	"bytes"
@@ -11,8 +11,8 @@ import (
 )
 
 // GetHashDupStr searches for duplicates with the content hash comparison method, prepares the output
-// containing all of the duplicates and if the remove flag is set to true it also removes the duplicates
-func GetHashDupStr(path string, recursive bool, remove bool, verbose bool) string {
+// containing all of the duplicates and if the remove flag is set to true it also removes the duplicates.
+func GetHashDupStr(path string, recursive bool, remove bool, style string) string {
 	// Extract the names of all files that are being taken into consideration
 	f, err := extrFilenames(path, recursive)
 	if err != nil {
@@ -30,13 +30,19 @@ func GetHashDupStr(path string, recursive bool, remove bool, verbose bool) strin
 	d := findDupsByte(f, h)
 
 	// Format the output (delete duplicates if delete flag is on) and return it
-	return fmtDupOutput(remove, d)
+	if style == "normal" {
+		return dupOutputTerm(remove, d)
+	} else if style == "csv" {
+		return dupOutputCSV(remove, d)
+	} else {
+		return ""
+	}
 }
 
 // GetPerceptualDupStr searches for duplicates with the perceptual image comparison method, prepares
 // the output containing all of the duplicates and if the remove flag is set to true it also removes
-// the duplicates
-func GetPerceptualDupStr(path string, recursive bool, remove bool, verbose bool) string {
+// the duplicates.
+func GetPerceptualDupStr(path string, recursive bool, remove bool, style string) string {
 	// Extract the names of all files that are being taken into consideration
 	f, err := extrFilenames(path, recursive)
 	if err != nil {
@@ -55,10 +61,16 @@ func GetPerceptualDupStr(path string, recursive bool, remove bool, verbose bool)
 	d := findDupsFloat32(f, h, s)
 
 	// Format the output (delete duplicates if delete flag is on) and return it
-	return fmtDupOutput(remove, d)
+	if style == "normal" {
+		return dupOutputTerm(remove, d)
+	} else if style == "csv" {
+		return dupOutputCSV(remove, d)
+	} else {
+		return ""
+	}
 }
 
-// findDupsByte finds duplicate files with the use of byte hashes
+// findDupsByte finds duplicate files with the use of byte hashes.
 func findDupsByte(files []string, hashes [][32]byte) map[string][]string {
 	dups := make(map[string][]string)
 	fLen := len(files)
@@ -86,7 +98,7 @@ func findDupsByte(files []string, hashes [][32]byte) map[string][]string {
 	return dups
 }
 
-// findDupsFloat32 finds duplicate files with the use of float32 hashes
+// findDupsFloat32 finds duplicate files with the use of float32 hashes.
 func findDupsFloat32(files []string, hashes [][]float32, sizes []image.Point) map[string][]string {
 	dups := make(map[string][]string)
 	fLen := len(files)
@@ -114,8 +126,9 @@ func findDupsFloat32(files []string, hashes [][]float32, sizes []image.Point) ma
 	return dups
 }
 
-// fmtDupOutput formats a string with all the found duplicates and if necessary also deletes them
-func fmtDupOutput(rm bool, d map[string][]string) string {
+// dupOutputTerm creates a string with all the found duplicates in a format for terminal output and if necessary it also
+// deletes them.
+func dupOutputTerm(rm bool, d map[string][]string) string {
 	var sb strings.Builder
 	if len(d) == 0 {
 		sb.WriteString("no duplicates found")
@@ -139,6 +152,33 @@ func fmtDupOutput(rm bool, d map[string][]string) string {
 				}
 
 				sb.WriteString("\n")
+			}
+			sb.WriteString("\n")
+		}
+	}
+
+	return sb.String()
+}
+
+// fmtDupOutputCSV creates a string with all the found duplicates in a csv format and if necessary it also deletes them.
+func dupOutputCSV(rm bool, d map[string][]string) string {
+	var sb strings.Builder
+	if len(d) == 0 {
+		sb.WriteString("")
+	} else {
+		sb.WriteString("original,duplicates\n")
+
+		for k, v := range d {
+			// sb.WriteString(fmt.Sprintf("File %s is the same as:\n", k))
+			sb.WriteString(k)
+
+			for i := 0; i < len(v); i++ {
+				sb.WriteString("," + v[i])
+
+				// Delete duplicates if flag is true
+				if rm {
+					_ = os.Remove(v[i])
+				}
 			}
 			sb.WriteString("\n")
 		}

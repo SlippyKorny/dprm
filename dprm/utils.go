@@ -1,4 +1,4 @@
-package main
+package dprm
 
 // isInMap checks whether a value is in a map[string][]string under some key
 func isInMap(m map[string][]string, v string) bool {
