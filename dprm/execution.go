@@ -8,12 +8,12 @@ import (
 
 // args contains runtime arguments for the drpm command
 type Args struct {
-	method    string
-	remove    bool
-	recursive bool
-	csv       bool
-	verbose   bool
-	directory string
+	Method    string
+	Remove    bool
+	Recursive bool
+	CSV       bool
+	Verbose   bool
+	Directory string
 }
 
 // loadArgs creates the arguments struct with the passed arguments
@@ -50,11 +50,11 @@ Usage: dprm [OPTION...] [DIRECTORY]
 `)
 	}
 
-	flag.StringVar(&a.method, "method", "hashes", "")
-	flag.BoolVar(&a.remove, "remove", false, "")
-	flag.BoolVar(&a.recursive, "recursive", false, "")
-	flag.BoolVar(&a.csv, "csv", false, "")
-	flag.BoolVar(&a.verbose, "verbose", false, "")
+	flag.StringVar(&a.Method, "method", "hashes", "")
+	flag.BoolVar(&a.Remove, "remove", false, "")
+	flag.BoolVar(&a.Recursive, "recursive", false, "")
+	flag.BoolVar(&a.CSV, "csv", false, "")
+	flag.BoolVar(&a.Verbose, "verbose", false, "")
 	flag.Parse()
 
 	if flag.NArg() == 0 {
@@ -63,7 +63,7 @@ Usage: dprm [OPTION...] [DIRECTORY]
 		os.Exit(1)
 	}
 
-	a.directory = flag.Args()[0] // directory
+	a.Directory = flag.Args()[0] // directory
 
 	return a
 }
@@ -79,9 +79,9 @@ func Run(a *Args) string {
 
 	// Select the output style
 	var style string
-	if a.csv {
+	if a.CSV {
 		style = "csv"
-	} else if a.verbose {
+	} else if a.Verbose {
 		style = "normal"
 	} else {
 		style = "none"
@@ -89,12 +89,12 @@ func Run(a *Args) string {
 
 	// Remove duplicates if the remove flag was selected
 	var s string
-	if a.method == "hashes" {
-		s = GetHashDupStr(a.directory, a.recursive, a.remove, style)
-	} else if a.method == "perceptual" {
-		s = GetPerceptualDupStr(a.directory, a.recursive, a.remove, style)
+	if a.Method == "hashes" {
+		s = GetHashDupStr(a.Directory, a.Recursive, a.Remove, style)
+	} else if a.Method == "perceptual" {
+		s = GetPerceptualDupStr(a.Directory, a.Recursive, a.Remove, style)
 	} else {
-		fmt.Printf("No such method as '%s'\n", a.method)
+		fmt.Printf("No such method as '%s'\n", a.Method)
 		os.Exit(2)
 	}
 
