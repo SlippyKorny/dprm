@@ -12,7 +12,7 @@ This method uses SHA256 cryptographic hash function to generate a 32 byte hash f
 
 ### Perceptual image similarity
 
-This method uses an implementation of a perceptual image similarity algorithm made by [Vitali Fedulov](https://github.com/vitali-fedulov/images). This method works great with:
+This method uses an implementation of a perceptual image similarity algorithm implemented by [Vitali Fedulov](https://github.com/vitali-fedulov/images). This method works great with:
 1. Finding similar images of different compression rate
 2. Finding images with the same features and little differences
 
