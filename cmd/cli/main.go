@@ -1,9 +1,11 @@
-package dprm
+package main
 
 import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/TheSlipper/dprm/dprm"
 )
 
 // args contains runtime arguments for the drpm command
@@ -68,35 +70,15 @@ Usage: dprm [OPTION...] [DIRECTORY]
 	return a
 }
 
-// Run runs the commandline utility. It accepts a pointer to arguments so that other applications can incorporate this
-// tools functionality. If the pointer is nil then it reads the arguments from command line.
-func Run(a *Args) string {
-	// if no args passed then read them from the commandline arguments
-	if a == nil {
-		val := loadArgs()
-		a = &val
-	}
+func main() {
+	a := loadArgs()
 
-	// Select the output style
-	var style string
+	var format string
 	if a.CSV {
-		style = "csv"
-	} else if a.Verbose {
-		style = "normal"
+		format = "csv"
 	} else {
-		style = "none"
+		format = "normal"
 	}
 
-	// Remove duplicates if the remove flag was selected
-	var s string
-	if a.Method == "hashes" {
-		s = GetHashDupStr(a.Directory, a.Recursive, a.Remove, style)
-	} else if a.Method == "perceptual" {
-		s = GetPerceptualDupStr(a.Directory, a.Recursive, a.Remove, style)
-	} else {
-		fmt.Printf("No such method as '%s'\n", a.Method)
-		os.Exit(2)
-	}
-
-	return s
+	fmt.Println(dprm.Run(format, a.Method, a.Directory, a.Recursive, a.Remove))
 }
