@@ -10,6 +10,23 @@ import (
 	"github.com/vitali-fedulov/images"
 )
 
+// Run runs the commandline utility. It accepts a pointer to arguments so that other applications can incorporate this
+// tools functionality. If the pointer is nil then it reads the arguments from command line.
+func Run(format, method, directory string, recursive, remove bool) string {
+	// Remove duplicates if the remove flag was selected
+	var s string
+	if method == "hashes" {
+		s = GetHashDupStr(directory, recursive, remove, format)
+	} else if method == "perceptual" {
+		s = GetPerceptualDupStr(directory, recursive, remove, format)
+	} else {
+		fmt.Printf("No such method as '%s'\n", method)
+		os.Exit(2)
+	}
+
+	return s
+}
+
 // GetHashDupStr searches for duplicates with the content hash comparison method, prepares the output
 // containing all of the duplicates and if the remove flag is set to true it also removes the duplicates.
 func GetHashDupStr(path string, recursive bool, remove bool, style string) string {
