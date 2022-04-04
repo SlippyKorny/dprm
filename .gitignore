@@ -1,3 +1,4 @@
 test/
 *.exe
-.vscode/
+.vscode/bin/
+bin/
