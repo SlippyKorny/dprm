@@ -2,7 +2,6 @@
 # the program's output. This file should be put in one or more of the directories which 
 # will be traversed by the program. All paths should be relative to this file.
 # 
-# Format: (file, regexp, files...)
-# "base_file.png", "regexp_files_*.png", "another_file_1.png", "some_other_file2.png"
-# regexp is optional and if it shouldn't be used then just leave the field like so: ""
-"gopher.png", "", "gopher copy.png"
+# Format is csv hower the order matters. Insert entries like so: (file, regexp, files...)
+# regexp is optional and if it doesn't need to be used then just leave the field empty.
+gopher.png,,gopher copy.png

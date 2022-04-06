@@ -12,8 +12,18 @@ import (
 
 // Run runs the commandline utility. It accepts a pointer to arguments so that other applications can incorporate this
 // tools functionality. If the pointer is nil then it reads the arguments from command line.
-func Run(format, method, directory string, recursive, remove bool) string {
+func Run(format, method, directory string, recursive, remove bool) (string, error) {
+	// Load ignored item list
+	lines, err := LoadIgnoreFileList()
+	if err != nil {
+		return "", err
+	}
+	if len(lines) > 0 {
+		// TODO:
+	}
+
 	// Remove duplicates if the remove flag was selected
+	// TODO: the bellow functions should also return an error
 	var s string
 	if method == "hashes" {
 		s = GetHashDupStr(directory, recursive, remove, format)
@@ -24,7 +34,7 @@ func Run(format, method, directory string, recursive, remove bool) string {
 		os.Exit(2)
 	}
 
-	return s
+	return s, nil
 }
 
 // GetHashDupStr searches for duplicates with the content hash comparison method, prepares the output

@@ -65,6 +65,8 @@ Usage: dprm [OPTION...] [DIRECTORY]
 		os.Exit(1)
 	}
 
+	// TODO: This should first get the arguments, check the length
+	// and throw an error if directory not provided
 	a.Directory = flag.Args()[0] // directory
 
 	return a
@@ -80,5 +82,7 @@ func main() {
 		format = "normal"
 	}
 
+	// TODO: This should save the returned result and display it either
+	// in normal println or as an error
 	fmt.Println(dprm.Run(format, a.Method, a.Directory, a.Recursive, a.Remove))
 }

@@ -1,6 +1,8 @@
 package dprm
 
 import (
+	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -75,4 +77,33 @@ func extrFilenames(path string, recursive bool) ([]string, error) {
 	}
 
 	return files, nil
+}
+
+// LoadIgnoreFiles loads dprmignore file from current directory and returns a slice of slices
+// with files to ignore on duplicate. Format of the list: (initial file, regexp, elements...)
+func LoadIgnoreFileList() (lines [][]string, err error) {
+	file, err := os.Open(".dprmignore")
+	if err != nil {
+		if strings.Contains(err.Error(), "cannot find the file specified") {
+			return nil, nil
+		}
+		return nil, err
+	}
+	defer file.Close()
+
+	line := 0
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line++
+		entries := strings.Split(scanner.Text(), ",")
+		if len(entries) < 3 {
+			return nil, fmt.Errorf(
+				"dprmignore error - line %d: insufficient provided entries (provided %d but 3 are the minimum)",
+				line, len(entries))
+		}
+		lines = append(lines, entries)
+	}
+
+	err = scanner.Err()
+	return
 }
