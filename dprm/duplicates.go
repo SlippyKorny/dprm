@@ -20,7 +20,7 @@ type TraverseData struct {
 
 // Run runs the commandline utility. It accepts a pointer to arguments so that other applications can incorporate this
 // tools functionality. If the pointer is nil then it reads the arguments from command line.
-func Run(format, method, directory string, recursive, remove bool) (string, error) {
+func Run(format, method, directory string, recursive, remove bool) string {
 	data := TraverseData{
 		Path:      directory,
 		Format:    format,
@@ -31,7 +31,7 @@ func Run(format, method, directory string, recursive, remove bool) (string, erro
 	// Load ignored item list
 	lines, err := loadIgnoreFileList()
 	if err != nil {
-		return "", err
+		return ""
 	}
 	if len(lines) > 0 {
 		// TODO:
@@ -40,7 +40,6 @@ func Run(format, method, directory string, recursive, remove bool) (string, erro
 	data.Ignored = lines
 
 	// Remove duplicates if the remove flag was selected
-	// TODO: the bellow functions should also return an error
 	var s string
 	if method == "hashes" {
 		s = GetHashDupStr(data)
@@ -51,7 +50,7 @@ func Run(format, method, directory string, recursive, remove bool) (string, erro
 		os.Exit(2)
 	}
 
-	return s, nil
+	return s
 }
 
 // GetHashDupStr searches for duplicates with the content hash comparison method, prepares the output
@@ -71,7 +70,7 @@ func GetHashDupStr(data TraverseData) string {
 	}
 
 	// Find the duplicates and store their hashes and names
-	d := findDupsByte(f, h)
+	d := findDupsByte(f, data.Ignored, h)
 
 	// Format the output (delete duplicates if delete flag is on) and return it
 	if data.Format == "normal" {
@@ -102,7 +101,7 @@ func GetPerceptualDupStr(data TraverseData) string {
 	}
 
 	// Find the duplicates and store their hashes and names
-	d := findDupsFloat32(f, h, s)
+	d := findDupsFloat32(f, data.Ignored, h, s)
 
 	// Format the output (delete duplicates if delete flag is on) and return it
 	if data.Format == "normal" {
@@ -115,7 +114,7 @@ func GetPerceptualDupStr(data TraverseData) string {
 }
 
 // findDupsByte finds duplicate files with the use of byte hashes.
-func findDupsByte(files []string, hashes [][32]byte) map[string][]string {
+func findDupsByte(files []string, ignored [][]string, hashes [][32]byte) map[string][]string {
 	dups := make(map[string][]string)
 	fLen := len(files)
 
@@ -126,6 +125,10 @@ func findDupsByte(files []string, hashes [][32]byte) map[string][]string {
 		}
 
 		for j := i + 1; j < fLen; j++ {
+			if shouldBeIgnored(files[i], files[j], ignored) {
+				continue
+			}
+
 			// If hashes are exactly the same (conversion to slice from array)
 			if bytes.Compare(hashes[i][:], hashes[j][:]) == 0 {
 				// If it's a new entry then save like this
@@ -143,7 +146,7 @@ func findDupsByte(files []string, hashes [][32]byte) map[string][]string {
 }
 
 // findDupsFloat32 finds duplicate files with the use of float32 hashes.
-func findDupsFloat32(files []string, hashes [][]float32, sizes []image.Point) map[string][]string {
+func findDupsFloat32(files []string, ignored [][]string, hashes [][]float32, sizes []image.Point) map[string][]string {
 	dups := make(map[string][]string)
 	fLen := len(files)
 
@@ -154,6 +157,10 @@ func findDupsFloat32(files []string, hashes [][]float32, sizes []image.Point) ma
 		}
 
 		for j := i + 1; j < fLen; j++ {
+			if shouldBeIgnored(files[i], files[j], ignored) {
+				continue
+			}
+
 			// If hashes are exactly the same
 			if images.Similar(hashes[i], hashes[j], sizes[i], sizes[j]) {
 				// If it's a new entry then save like this
@@ -229,4 +236,22 @@ func dupOutputCSV(rm bool, d map[string][]string) string {
 	}
 
 	return sb.String()
+}
+
+// shouldBeIgnored checks whether the f1 and f2 are to be ignored when looking for duplicates.
+func shouldBeIgnored(f1, f2 string, ignored [][]string) bool {
+	for i := 0; i < len(ignored); i++ {
+		f1Found, f2Found := false, false
+		for j := 0; j < len(ignored[i]); j++ {
+			if f1 == ignored[i][j] {
+				f1Found = true
+			} else if f2 == ignored[i][j] {
+				f2Found = true
+			}
+		}
+		if f1Found && f2Found {
+			return true
+		}
+	}
+	return false
 }

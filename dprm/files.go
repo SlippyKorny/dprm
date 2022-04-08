@@ -95,7 +95,16 @@ func loadIgnoreFileList() (lines [][]string, err error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line++
-		entries := strings.Split(scanner.Text(), ",")
+		content := scanner.Text()
+
+		// Delete everything after comment
+		content = strings.Split(content, "#")[0]
+		if len(content) == 0 {
+			continue
+		}
+
+		// Tokenize
+		entries := strings.Split(content, ",")
 		if len(entries) < 3 {
 			return nil, fmt.Errorf(
 				"dprmignore error - line %d: insufficient provided entries (provided %d but 3 are the minimum)",
