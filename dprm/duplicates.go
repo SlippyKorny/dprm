@@ -10,25 +10,42 @@ import (
 	"github.com/vitali-fedulov/images"
 )
 
+type TraverseData struct {
+	Path      string
+	Remove    bool
+	Recursive bool
+	Format    string
+	Ignored   [][]string
+}
+
 // Run runs the commandline utility. It accepts a pointer to arguments so that other applications can incorporate this
 // tools functionality. If the pointer is nil then it reads the arguments from command line.
 func Run(format, method, directory string, recursive, remove bool) (string, error) {
+	data := TraverseData{
+		Path:      directory,
+		Format:    format,
+		Recursive: recursive,
+		Remove:    remove,
+	}
+
 	// Load ignored item list
-	lines, err := LoadIgnoreFileList()
+	lines, err := loadIgnoreFileList()
 	if err != nil {
 		return "", err
 	}
 	if len(lines) > 0 {
 		// TODO:
+		// lines, err = filterFilesWithRegexp()
 	}
+	data.Ignored = lines
 
 	// Remove duplicates if the remove flag was selected
 	// TODO: the bellow functions should also return an error
 	var s string
 	if method == "hashes" {
-		s = GetHashDupStr(directory, recursive, remove, format)
+		s = GetHashDupStr(data)
 	} else if method == "perceptual" {
-		s = GetPerceptualDupStr(directory, recursive, remove, format)
+		s = GetPerceptualDupStr(data)
 	} else {
 		fmt.Printf("No such method as '%s'\n", method)
 		os.Exit(2)
@@ -39,9 +56,9 @@ func Run(format, method, directory string, recursive, remove bool) (string, erro
 
 // GetHashDupStr searches for duplicates with the content hash comparison method, prepares the output
 // containing all of the duplicates and if the remove flag is set to true it also removes the duplicates.
-func GetHashDupStr(path string, recursive bool, remove bool, style string) string {
+func GetHashDupStr(data TraverseData) string {
 	// Extract the names of all files that are being taken into consideration
-	f, err := extrFilenames(path, recursive)
+	f, err := extrFilenames(data.Path, data.Recursive)
 	if err != nil {
 		return err.Error()
 	}
@@ -57,10 +74,10 @@ func GetHashDupStr(path string, recursive bool, remove bool, style string) strin
 	d := findDupsByte(f, h)
 
 	// Format the output (delete duplicates if delete flag is on) and return it
-	if style == "normal" {
-		return dupOutputTerm(remove, d)
-	} else if style == "csv" {
-		return dupOutputCSV(remove, d)
+	if data.Format == "normal" {
+		return dupOutputTerm(data.Remove, d)
+	} else if data.Format == "csv" {
+		return dupOutputCSV(data.Remove, d)
 	} else {
 		return ""
 	}
@@ -69,9 +86,9 @@ func GetHashDupStr(path string, recursive bool, remove bool, style string) strin
 // GetPerceptualDupStr searches for duplicates with the perceptual image comparison method, prepares
 // the output containing all of the duplicates and if the remove flag is set to true it also removes
 // the duplicates.
-func GetPerceptualDupStr(path string, recursive bool, remove bool, style string) string {
+func GetPerceptualDupStr(data TraverseData) string {
 	// Extract the names of all files that are being taken into consideration
-	f, err := extrFilenames(path, recursive)
+	f, err := extrFilenames(data.Path, data.Recursive)
 	if err != nil {
 		return err.Error()
 	}
@@ -88,10 +105,10 @@ func GetPerceptualDupStr(path string, recursive bool, remove bool, style string)
 	d := findDupsFloat32(f, h, s)
 
 	// Format the output (delete duplicates if delete flag is on) and return it
-	if style == "normal" {
-		return dupOutputTerm(remove, d)
-	} else if style == "csv" {
-		return dupOutputCSV(remove, d)
+	if data.Format == "normal" {
+		return dupOutputTerm(data.Remove, d)
+	} else if data.Format == "csv" {
+		return dupOutputCSV(data.Remove, d)
 	} else {
 		return ""
 	}

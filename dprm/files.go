@@ -79,9 +79,9 @@ func extrFilenames(path string, recursive bool) ([]string, error) {
 	return files, nil
 }
 
-// LoadIgnoreFiles loads dprmignore file from current directory and returns a slice of slices
+// loadIgnoreFileList loads dprmignore file from current directory and returns a slice of slices
 // with files to ignore on duplicate. Format of the list: (initial file, regexp, elements...)
-func LoadIgnoreFileList() (lines [][]string, err error) {
+func loadIgnoreFileList() (lines [][]string, err error) {
 	file, err := os.Open(".dprmignore")
 	if err != nil {
 		if strings.Contains(err.Error(), "cannot find the file specified") {
@@ -106,4 +106,11 @@ func LoadIgnoreFileList() (lines [][]string, err error) {
 
 	err = scanner.Err()
 	return
+}
+
+// filterFilesWithRegexp filters files with the received regular expresion.
+func filterFilesWithRegexp(regexp string, paths []string) ([]string, error) {
+	// for _, path := range paths {
+	// }
+	return nil, nil
 }
