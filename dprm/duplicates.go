@@ -31,7 +31,7 @@ func Run(format, method, directory string, recursive, remove bool) string {
 	// Load ignored item list
 	lines, err := loadIgnoreFileList()
 	if err != nil {
-		return ""
+		return err.Error()
 	}
 	if len(lines) > 0 {
 		// TODO:

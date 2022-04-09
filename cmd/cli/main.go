@@ -82,7 +82,5 @@ func main() {
 		format = "normal"
 	}
 
-	// TODO: This should save the returned result and display it either
-	// in normal println or as an error
 	fmt.Println(dprm.Run(format, a.Method, a.Directory, a.Recursive, a.Remove))
 }
