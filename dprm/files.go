@@ -105,9 +105,9 @@ func loadIgnoreFileList() (lines [][]string, err error) {
 
 		// Tokenize
 		entries := strings.Split(content, ",")
-		if len(entries) < 3 {
+		if len(entries) < 2 {
 			return nil, fmt.Errorf(
-				"dprmignore error - line %d: insufficient provided entries (provided %d but 3 are the minimum)",
+				"dprmignore error - line %d: insufficient provided entries (provided %d but 2 are the minimum)",
 				line, len(entries))
 		}
 		lines = append(lines, entries)
@@ -115,11 +115,4 @@ func loadIgnoreFileList() (lines [][]string, err error) {
 
 	err = scanner.Err()
 	return
-}
-
-// filterFilesWithRegexp filters files with the received regular expresion.
-func filterFilesWithRegexp(regexp string, paths []string) ([]string, error) {
-	// for _, path := range paths {
-	// }
-	return nil, nil
 }

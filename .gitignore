@@ -1,4 +1,4 @@
 test/
 *.exe
 .vscode/bin/
-bin/
+bin/cmd/cli/.dprmignore
