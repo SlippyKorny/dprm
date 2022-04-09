@@ -33,10 +33,6 @@ func Run(format, method, directory string, recursive, remove bool) string {
 	if err != nil {
 		return err.Error()
 	}
-	if len(lines) > 0 {
-		// TODO:
-		// lines, err = filterFilesWithRegexp()
-	}
 	data.Ignored = lines
 
 	// Remove duplicates if the remove flag was selected
