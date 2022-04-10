@@ -23,8 +23,8 @@ func loadArgs() Args {
 	var a Args
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `dprm version 0.0.3
-Made by Kornel Domeradzki
+		fmt.Fprintf(os.Stderr, `dprm version 0.1.0
+Copyright (C) 2022 by Kornel Domeradzki
 Source: http://github.com/TheSlipper/dprm
 
 dprm is a simple commandline hash based duplicate image search and removal tool.
