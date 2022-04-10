@@ -65,6 +65,8 @@ Usage: dprm [OPTION...] [DIRECTORY]
 		os.Exit(1)
 	}
 
+	// TODO: This should first get the arguments, check the length
+	// and throw an error if directory not provided
 	a.Directory = flag.Args()[0] // directory
 
 	return a

@@ -1,0 +1,6 @@
+# This file contains information about duplicates which are not to be included in
+# the program's output. This file should be put in one or more of the directories which 
+# will be traversed by the program. All paths should be relative to this file.
+# 
+# Format is csv-like. Insert entries like so: (file1, file2, etc.)
+gopher.png,,gopher copy.png
