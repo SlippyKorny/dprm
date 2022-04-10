@@ -23,8 +23,8 @@ This method uses an implementation of a perceptual image similarity algorithm im
 ## Usage
 
 ```
-dprm version 0.0.2
-Copyright (C) 2021 by Kornel Domeradzki
+dprm version 0.1.0
+Copyright (C) 2022 by Kornel Domeradzki
 Source: http://github.com/TheSlipper/dprm
 
 dprm is a simple commandline hash based duplicate image search and removal tool.
@@ -53,12 +53,12 @@ Usage: dprm [OPTION...] [DIRECTORY]
 
 In the [release section](https://github.com/TheSlipper/dprm/releases) you will find the builds for x86 Linux, Windows and macOS systems. All you need to do is download it and add the utility to your path. If you need to use the utility on a different architecture then you will need to compile it from source with the instructions available bellow.   
 
-In order to set up this utility you need to have go installed. The process varies for every operating system therefore that part is not included in the instructions. Once you install it, run the commands listed below:
+In order to set up this utility you need to have go, make and git installed. You will also need to have GOPATH set up correctly. The process varies for every operating system therefore that part is not included in the instructions. Once you have installed it, run the commands listed below:
 
 ```
-go get github.com/TheSlipper/dprm
-cd $GOPATH/src/github.com/TheSlipper/dprm/
-go install
+git clone https://github.com/TheSlipper/dprm.git
+cd dprm/
+make install
 ```
 You can check if your installation was successful by running `dprm --help`.
 

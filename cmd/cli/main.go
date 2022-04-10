@@ -1,9 +1,11 @@
-package dprm
+package main
 
 import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/TheSlipper/dprm/dprm"
 )
 
 // args contains runtime arguments for the drpm command
@@ -21,8 +23,8 @@ func loadArgs() Args {
 	var a Args
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `dprm version 0.0.3
-Made by Kornel Domeradzki
+		fmt.Fprintf(os.Stderr, `dprm version 0.1.0
+Copyright (C) 2022 by Kornel Domeradzki
 Source: http://github.com/TheSlipper/dprm
 
 dprm is a simple commandline hash based duplicate image search and removal tool.
@@ -63,40 +65,22 @@ Usage: dprm [OPTION...] [DIRECTORY]
 		os.Exit(1)
 	}
 
+	// TODO: This should first get the arguments, check the length
+	// and throw an error if directory not provided
 	a.Directory = flag.Args()[0] // directory
 
 	return a
 }
 
-// Run runs the commandline utility. It accepts a pointer to arguments so that other applications can incorporate this
-// tools functionality. If the pointer is nil then it reads the arguments from command line.
-func Run(a *Args) string {
-	// if no args passed then read them from the commandline arguments
-	if a == nil {
-		val := loadArgs()
-		a = &val
-	}
+func main() {
+	a := loadArgs()
 
-	// Select the output style
-	var style string
+	var format string
 	if a.CSV {
-		style = "csv"
-	} else if a.Verbose {
-		style = "normal"
+		format = "csv"
 	} else {
-		style = "none"
+		format = "normal"
 	}
 
-	// Remove duplicates if the remove flag was selected
-	var s string
-	if a.Method == "hashes" {
-		s = GetHashDupStr(a.Directory, a.Recursive, a.Remove, style)
-	} else if a.Method == "perceptual" {
-		s = GetPerceptualDupStr(a.Directory, a.Recursive, a.Remove, style)
-	} else {
-		fmt.Printf("No such method as '%s'\n", a.Method)
-		os.Exit(2)
-	}
-
-	return s
+	fmt.Println(dprm.Run(format, a.Method, a.Directory, a.Recursive, a.Remove))
 }
