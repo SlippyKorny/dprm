@@ -2,3 +2,4 @@ test/
 *.exe
 .vscode/bin/
 bin/cmd/cli/.dprmignore
+img/
