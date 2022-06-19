@@ -63,6 +63,11 @@ func BuildMainWindow() MainWindow {
 			PushButton{
 				Text: "Find duplicates",
 				OnClicked: func() {
+					if res, msg := StateSingleton.IsValid(); !res {
+						dialog.Message(msg).Error()
+						return
+					}
+
 					str := dprm.Run(StateSingleton.Format, StateSingleton.Method,
 						StateSingleton.Directory, StateSingleton.Recursive, StateSingleton.Remove)
 					fmt.Println(str)
