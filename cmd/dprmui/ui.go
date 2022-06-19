@@ -25,14 +25,14 @@ func BuildMainWindow() MainWindow {
 						return
 					}
 					dir = dir + string(os.PathSeparator)
-					StateSingleton.Directory = dir
+					StateSingleton.Form.Directory = dir
 				},
 			},
 			CheckBox{
 				Name:             "recursive",
 				Text:             "Recursive traversal",
 				Checked:          false,
-				OnCheckedChanged: func() { StateSingleton.Recursive = !StateSingleton.Recursive },
+				OnCheckedChanged: func() { StateSingleton.Form.Recursive = !StateSingleton.Form.Recursive },
 			},
 			CheckBox{
 				Name:    "removal",
@@ -40,7 +40,7 @@ func BuildMainWindow() MainWindow {
 				Checked: false,
 				OnCheckedChanged: func() {
 					dialog.Message("This will irreversibely delete your files without warning! If you are not certain, uncheck \"removal\" checkbox!").Info()
-					StateSingleton.Recursive = !StateSingleton.Recursive
+					StateSingleton.Form.Recursive = !StateSingleton.Form.Recursive
 				},
 			},
 			RadioButtonGroup{
@@ -50,77 +50,47 @@ func BuildMainWindow() MainWindow {
 						Name:      "method-hashes",
 						Text:      "SHA-256 Hashes",
 						Value:     "hashes",
-						OnClicked: func() { StateSingleton.Method = "hashes" },
+						OnClicked: func() { StateSingleton.Form.Method = "hashes" },
 					},
 					RadioButton{
 						Name:      "method-perceptual",
 						Text:      "Perceptual image similarity",
 						Value:     "perceptual",
-						OnClicked: func() { StateSingleton.Method = "perceptual" },
+						OnClicked: func() { StateSingleton.Form.Method = "perceptual" },
 					},
 				},
 			},
 			PushButton{
 				Text: "Find duplicates",
 				OnClicked: func() {
-					if res, msg := StateSingleton.IsValid(); !res {
+					if res, msg := StateSingleton.Form.IsValid(); !res {
 						dialog.Message(msg).Error()
 						return
 					}
 
-					str := dprm.Run(StateSingleton.Format, StateSingleton.Method,
-						StateSingleton.Directory, StateSingleton.Recursive, StateSingleton.Remove)
+					str := dprm.Run(StateSingleton.Form.Format, StateSingleton.Form.Method,
+						StateSingleton.Form.Directory, StateSingleton.Form.Recursive, StateSingleton.Form.Remove)
 					fmt.Println(str)
+					err := StateSingleton.UI.duplicatesTable.SetModel(NewEmptyDuplicatesModel())
+					if err != nil {
+						dialog.Message(err.Error()).Error()
+					}
 				},
 			},
-			// TableView{
-			// 	Name:             "tableView", // Name is needed for settings persistence
-			// 	AlternatingRowBG: true,
-			// 	ColumnsOrderable: true,
-			// 	Columns: []TableViewColumn{
-			// 		// Name is needed for settings persistence
-			// 		{Name: "#", DataMember: "Index"}, // Use DataMember, if names differ
-			// 		{Name: "Bar"},
-			// 		{Name: "Baz", Format: "%.2f", Alignment: AlignFar},
-			// 		{Name: "Quux", Format: "2006-01-02 15:04:05", Width: 150},
-			// 	},
-			// 	Model: NewFooModel(),
-			// },
+			TableView{
+				AssignTo:         &StateSingleton.UI.duplicatesTable,
+				Name:             "duplicate-view", // Name is needed for settings persistence
+				AlternatingRowBG: true,
+				ColumnsOrderable: true,
+				Columns: []TableViewColumn{
+					// Name is needed for settings persistence
+					{Name: "#", DataMember: "Index"}, // Use DataMember, if names differ
+					{DataMember: "Name", Name: "Name"},
+					{DataMember: "Format", Name: "Format"},
+					{DataMember: "Size", Name: "Size", Format: "%.2fMB"},
+				},
+				Model: NewEmptyDuplicatesModel(),
+			},
 		},
 	}
 }
-
-// type FooModel struct {
-// 	walk.SortedReflectTableModelBase
-// 	items []*Foo
-// }
-
-// func (m *FooModel) Items() interface{} {
-// 	return m.items
-// }
-
-// type Foo struct {
-// 	Index int
-// 	Bar   string
-// 	Baz   float64
-// 	Quux  time.Time
-// }
-
-// func NewFooModel() *FooModel {
-// 	now := time.Now()
-
-// 	rand.Seed(now.UnixNano())
-
-// 	m := &FooModel{items: make([]*Foo, 1000)}
-
-// 	for i := range m.items {
-// 		m.items[i] = &Foo{
-// 			Index: i,
-// 			Bar:   strings.Repeat("*", rand.Intn(5)+1),
-// 			Baz:   rand.Float64() * 1000,
-// 			Quux:  time.Unix(rand.Int63n(now.Unix()), 0),
-// 		}
-// 	}
-
-// 	return m
-// }
